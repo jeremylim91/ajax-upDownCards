@@ -34,14 +34,14 @@ if (env === 'production') {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
-db.user = userModel(sequelize, Sequelize.DataTypes);
-db.game = gameModel(sequelize, Sequelize.DataTypes);
+db.User = userModel(sequelize, Sequelize.DataTypes);
+db.Game = gameModel(sequelize, Sequelize.DataTypes);
 // db.GamesUser = gamesUserModel(sequelize, Sequelize.DataTypes);
 
 // in order for the many-to-many to work we must mention the join table here.
 // many to many r/s
-db.user.belongsToMany(db.game, { through: 'gameUsers' });
-db.game.belongsToMany(db.user, { through: 'gameUsers' });
+db.User.belongsToMany(db.Game, { through: 'gameUsers' });
+db.Game.belongsToMany(db.User, { through: 'gameUsers' });
 
 // one-to-many r/s
 // db.User.hasMany(db.GamesUser);

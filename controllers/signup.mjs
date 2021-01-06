@@ -18,7 +18,7 @@ export default function signups(db) {
 
     try {
       // add user's credentials into the db
-      const createdDBEntry = await db.user.create({
+      const createdDBEntry = await db.User.create({
         email: req.body.email,
         password: hashedPassword,
       });

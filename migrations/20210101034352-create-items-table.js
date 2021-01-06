@@ -30,7 +30,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      cards: {
+      gameState: {
         type: Sequelize.JSON,
       },
       createdAt: {

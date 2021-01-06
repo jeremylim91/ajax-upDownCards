@@ -55,7 +55,7 @@ async function checkAuth(req, res) {
 
 // fn  for middleware that checks if user is logged in everyime he makes an req to site.
 // this is a  middleware meant to be run on all routes
-function verifySession(req, res /* next */) {
+function verifySession(req, res, next) {
   // set a default value stating that user is not logged in
   req.isUserLoggedIn = false;
 
@@ -80,7 +80,7 @@ function verifySession(req, res /* next */) {
     res.status(403).send('Please login to continue');
   }
 
-  // next();
+  next();
 }
 
 export default {

@@ -1,3 +1,48 @@
 body {
   background-color: pink;
 }
+
+.playingArea {
+  width: 800px;
+  height: 400px;
+  background-color: rgb(46, 89, 196);
+}
+
+.playerHand {
+  width: 800px;
+  height: 400px;
+  background-color: rgb(184, 230, 184);
+}
+
+.cardEls {
+  font-size: 0.5rem;
+  width: 3rem;
+  height: 5rem;
+  border: solid black;
+  border-width: 1px;
+  background-color: white;
+  display: inline-block;
+  margin: 0.2rem;
+}
+.discardPile,
+.drawPile,
+.referenceCardPile {
+  font-size: 0.5rem;
+  width: 3rem;
+  height: 5rem;
+  border: solid black;
+  border-width: 1px;
+  background-color: white;
+  display: inline-block;
+  margin: 0.5rem;
+}
+.drawPile {
+  font-size: 0.5rem;
+  width: 3rem;
+  height: 5rem;
+  border: solid black;
+  border-width: 1px;
+  background-color: white;
+  display: inline-block;
+  margin: 0.5rem;
+}
