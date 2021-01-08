@@ -17,7 +17,7 @@ const evaluateForWin = (playerHand) => {
 };
 const endPlayerTurn = () => {
   axios.put('/endplayerTurn', { currGameId })
-    .then(/* updateCardElsWContent */)
+    .then(updateCardElsWContent)
     .catch((err) => { console.log(err); });
 };
 
@@ -29,17 +29,17 @@ const buildBoardEls = () => {
   const container = document.createElement('div');
   container.setAttribute('class', 'container');
 
-  // playing area (Row)
+  // ==playing area (Row)
   const playingArea = document.createElement('div');
   playingArea.setAttribute('class', 'playingArea row');
 
-  // deck (col)
+  // ==deck (col)
   const deck = document.createElement('div');
   deck.setAttribute('class', 'drawPile col');
-  // reference pile (col)
+  // ==reference pile (col)
   const referenceCardPile = document.createElement('div');
   referenceCardPile.setAttribute('class', 'referenceCardPile col');
-  // discard pile (col)
+  // ==discard pile (col)
   const discardPile = document.createElement('div');
   discardPile.setAttribute('class', 'discardPile col');
 
@@ -47,14 +47,14 @@ const buildBoardEls = () => {
   const infoRow = document.createElement('div');
   infoRow.setAttribute('class', 'row infoBar');
 
-  // display whose turn it is (col)
+  // ==display whose turn it is (col)
   const turnDisplay = document.createElement('div');
   turnDisplay.setAttribute('class', 'col-2');
 
-  // button to end turn (col)
+  // ==button to end turn (col)
   const endTurnBtnHoldingCol = document.createElement('div');
   endTurnBtnHoldingCol.setAttribute('class', 'col-2');
-  // end turn button
+  // ==end turn button
   const endTurnBtn = document.createElement('button');
   endTurnBtn.innerHTML = 'End Current Turn';
   endTurnBtn.setAttribute('class', 'endTurnBtn');
@@ -64,6 +64,33 @@ const buildBoardEls = () => {
   // create a row to hold cards in current player's hand
   const currPlayerHand = document.createElement('div');
   currPlayerHand.setAttribute('class', 'currPlayerHand row');
+
+  // create the modal to display when someone wins
+  const modal = document.createElement('div');
+  modal.setAttribute('class', 'modal');
+
+  // ==create the html element that closes the modal
+  const closeModal = document.createElement('span');
+  closeModal.setAttribute('class', 'close');
+  closeModal.innerHTML = 'x';
+  modal.appendChild(closeModal);
+
+  // ==create the div to contain content inside the modal
+  const modalContent = document.createElement('div');
+  modalContent.setAttribute('class', 'modal-content');
+  modal.appendChild(modalContent);
+
+  // ==create the button that brings user to refresh the page
+  const newGameBtn = document.createElement('button');
+  newGameBtn.setAttribute('class', 'btn btn-primary');
+  newGameBtn.addEventListener('click', () => {
+    axios.post('/')
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => { console.log(error); });
+  });
+  modal.appendChild(newGameBtn);
 
   // append to:
   // playing area
@@ -79,6 +106,9 @@ const buildBoardEls = () => {
   container.appendChild(infoRow);
   container.appendChild(currPlayerHand);
 
+  // document
+  document.body.appendChild(modal);
+
   // remove start button
   const startGameBtn = document.querySelector('.startGameBtn');
   document.body.removeChild(startGameBtn);
@@ -86,7 +116,7 @@ const buildBoardEls = () => {
   return container;
 };
 
-const displayCardsInPlayerHand = (arrayOfCards, referenceCardPileTopCard, discardPile, gameId) => {
+const displayCardsInPlayerHand = (arrayOfCards, referenceCardPileTopCard, discardPile) => {
   document.querySelector('.currPlayerHand').innerHTML = '';
 
   arrayOfCards.forEach((element, index) => {
@@ -103,7 +133,7 @@ const displayCardsInPlayerHand = (arrayOfCards, referenceCardPileTopCard, discar
       console.log(index);
       // go to server to validate if user is authorised to discard card,then update gameState if nec
       axios.post('/validateDiscardingOfCard', {
-        element, referenceCardPileTopCard, index, gameId,
+        element, referenceCardPileTopCard, index, currGameId,
       })
         .then(updateCardElsWContent)
         .catch((err) => {
@@ -122,16 +152,21 @@ const updateCardElsWContent = ({ data }) => {
   console.log(data);
 
   const {
-    gameId, playerHand, referenceCardPile, discardPile, drawPile,
+    gameId, playerHand, referenceCardPile, discardPile, drawPile, won, winnerDetails,
   } = data;
+  if (gameId !== undefined) {
   // update the global variable w. the gameId
-  currGameId = gameId;
+    currGameId = gameId;
+  }
+  // trigger win modal if there is a winner
+  if (won === true) {
+    // do an axios.put to update statusLive to false
 
-  console.log('playerHand is:');
-  console.log(playerHand);
+    // unhhide modal
+    document.querySelector('.modal').style.display = 'block';
 
-  console.log('drawPile is:');
-  console.log(drawPile);
+    document.querySelector('.modal-content').innerHTML = 'Hi there!';
+  }
 
   // display the draw pile(which is just the back of a card)
   document.querySelector('.drawPile').innerHTML = `drawPile
@@ -144,13 +179,14 @@ const updateCardElsWContent = ({ data }) => {
   // display the above card in draw pile
   document.querySelector('.referenceCardPile').innerHTML = `${referenceCardPileTopCard.name} of ${referenceCardPileTopCard.suit}`;
 
+  document.querySelector('.discardPile').innerHTML = '';
   // display the top card in discardPile (if it has any cards)
   if (discardPile.length > 0) {
     document.querySelector('.discardPile').innerHTML = `${discardPile[discardPile.length - 1].name} of ${discardPile[discardPile.length - 1].suit}`;
   }
 
   // display the cards in player's hand
-  displayCardsInPlayerHand(playerHand, referenceCardPileTopCard, discardPile, gameId);
+  displayCardsInPlayerHand(playerHand, referenceCardPileTopCard, discardPile);
   i += 1;
   console.log(`iteration:${i}`);
 };

@@ -8,10 +8,12 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       email: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       password: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -31,7 +33,13 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       gameState: {
+        allowNull: false,
         type: Sequelize.JSON,
+      },
+      liveStatus: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,

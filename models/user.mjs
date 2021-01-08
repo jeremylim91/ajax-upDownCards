@@ -7,9 +7,11 @@ export default function userModel(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
     },
     email: {
+      allowNull: false,
       type: DataTypes.STRING,
     },
     password: {
+      allowNull: false,
       type: DataTypes.STRING,
     },
     createdAt: {

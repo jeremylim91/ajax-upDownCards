@@ -7,7 +7,13 @@ export default function gameModel(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
     },
     gameState: {
+      allowNull: false,
       type: DataTypes.JSON,
+    },
+    liveStatus: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     createdAt: {
       allowNull: false,
