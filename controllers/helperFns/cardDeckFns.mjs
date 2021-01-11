@@ -28,49 +28,76 @@ const shuffleCards = function (cards) {
   return cards;
 };
 
-const makeDeck = function () {
+// Make a deck
+const makeDeck = () => {
   // create the empty deck at the beginning
-  const deck = [];
-
+  const newDeck = [];
   const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
-  let suitIndex = 0;
-  while (suitIndex < suits.length) {
+  for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
     // make a variable of the current suit
     const currentSuit = suits[suitIndex];
+    // console.log(`current suit: ${currentSuit}`);
+
+    let color = '';
+    let suitSymbol = suitIndex;
+    if (suitSymbol === 0) {
+      suitSymbol = '♥';
+      color = 'red';
+    } else if (suitSymbol === 1) {
+      suitSymbol = '♦';
+
+      color = 'red';
+    } else if (suitSymbol === 2) {
+      suitSymbol = '♣';
+      color = 'black';
+    } else if (suitSymbol === 3) {
+      suitSymbol = '♠';
+      color = 'black';
+    }
 
     // loop to create all cards in this suit
     // rank 1-13
-    let rankCounter = 1;
-    while (rankCounter <= 13) {
-      let cardName = rankCounter;
+    for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
+      // Convert rankCounter to string
+      let cardName = `${rankCounter}`;
+
+      let display = '';
+      display = rankCounter;
 
       // 1, 11, 12 ,13
-      if (cardName === 1) {
+      if (cardName === '1') {
         cardName = 'ace';
-      } else if (cardName === 11) {
+        display = 'A';
+      } else if (cardName === '11') {
         cardName = 'jack';
-      } else if (cardName === 12) {
+        display = 'J';
+      } else if (cardName === '12') {
         cardName = 'queen';
-      } else if (cardName === 13) {
+        display = 'Q';
+      } else if (cardName === '13') {
         cardName = 'king';
+        display = 'K';
       }
 
       // make a single card object variable
       const card = {
+        display,
+        suitSymbol,
         name: cardName,
+        color,
         suit: currentSuit,
         rank: rankCounter,
       };
 
-      // add the card to the deck
-      deck.push(card);
+      // console.log(`rank: ${rankCounter}`);
 
-      rankCounter += 1;
+      // add the card to the deck
+      newDeck.push(card);
     }
-    suitIndex += 1;
   }
-  return deck;
+
+  return newDeck;
 };
 
 // cards is an array of card objects

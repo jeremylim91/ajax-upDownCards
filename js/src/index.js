@@ -1,12 +1,9 @@
 import axios from 'axios';
+import { image } from 'faker';
 import './styles.scss';
 
 let i = 0;
 let currGameId = 0;
-
-const test = document.createElement('div');
-test.innerHTML = 'wowwww';
-document.body.appendChild(test);
 
 const evaluateForWin = (playerHand) => {
   // player wins if he clears his entire hand
@@ -23,89 +20,89 @@ const endPlayerTurn = () => {
 
 const buildBoardEls = () => {
   console.log('creating the board elements');
-  // create:
+  // unhide html container
+  const container = document.querySelector('.container');
+  container.classList.remove('hideable');
 
+  // create:
   // containers
-  const container = document.createElement('div');
-  container.setAttribute('class', 'container');
+  // const container = document.createElement('div');
+  // // added extra r to container for testing
+  // container.setAttribute('class', 'containerr');
 
   // ==playing area (Row)
-  const playingArea = document.createElement('div');
-  playingArea.setAttribute('class', 'playingArea row');
+  // const playingArea = document.createElement('div');
+  // playingArea.setAttribute('class', 'playingArea row');
 
   // == ==playing area (col) (3 of them)
-  for (let n = 0; n < 3; n += 1) {
-    const playingAreaCol = document.createElement('div');
-    playingAreaCol.setAttribute('class', `playingAreaCol${n} col-2`);
-    playingAreaCol.innerHTML = `hllo ${n}`;
-    playingArea.appendChild(playingAreaCol);
-  }
+  // for (let n = 0; n < 3; n += 1) {
+  //   const playingAreaCol = document.createElement('div');
+  //   playingAreaCol.setAttribute('class', `playingAreaCol${n} col-2`);
+  //   playingAreaCol.innerHTML = `hllo ${n}`;
+  //   playingArea.appendChild(playingAreaCol);
+  // }
   // == == ==deck
-  const drawPileSubheader = document.createElement('h2');
-  drawPileSubheader.setAttribute('class', 'playingAreaSubheader');
+  // const drawPileSubheader = document.createElement('h2');
+  // drawPileSubheader.setAttribute('class', 'playingAreaSubheader');
 
-  const deck = document.createElement('div');
-  deck.setAttribute('class', 'drawPile');
+  // const deck = document.createElement('div');
+  // deck.setAttribute('class', 'drawPile');
 
   // == == ==reference pile
-  const referenceCardPileSubheader = document.createElement('div');
-  referenceCardPileSubheader.setAttribute('class', 'playingAreaSubheader');
-  referenceCardPileSubheader.innerHTML = 'Reference card:';
+  // const referenceCardPileSubheader = document.createElement('div');
+  // referenceCardPileSubheader.setAttribute('class', 'playingAreaSubheader');
+  // referenceCardPileSubheader.innerHTML = 'Reference card:';
 
-  const referenceCardPile = document.createElement('div');
-  referenceCardPile.setAttribute('class', 'referenceCardPile');
+  // const referenceCardPile = document.createElement('div');
+  // referenceCardPile.setAttribute('class', 'referenceCardPile');
 
   // == == ==discard pile
-  const discardPileSubheader = document.createElement('div');
-  discardPileSubheader.setAttribute('class', 'playingAreaSubheader');
-  discardPileSubheader.innerHTML = 'Discard Pile:';
+  // const discardPileSubheader = document.createElement('div');
+  // discardPileSubheader.setAttribute('class', 'playingAreaSubheader');
+  // discardPileSubheader.innerHTML = 'Discard Pile:';
 
-  const discardPile = document.createElement('div');
-  discardPile.setAttribute('class', 'discardPile');
+  // const discardPile = document.createElement('div');
+  // discardPile.setAttribute('class', 'discardPile');
 
   // create info bar that provides info and playing btns(row)
-  const infoRow = document.createElement('div');
-  infoRow.setAttribute('class', 'row infoBar');
+  // const infoRow = document.createElement('div');
+  // infoRow.setAttribute('class', 'row infoBar');
 
   // ==display whose turn it is (col)
-  const turnDisplay = document.createElement('div');
-  turnDisplay.setAttribute('class', 'col-2');
+  // const turnDisplay = document.createElement('div');
+  // turnDisplay.setAttribute('class', 'col-2');
 
   // ==button to end turn (col)
-  const endTurnBtnHoldingCol = document.createElement('div');
-  endTurnBtnHoldingCol.setAttribute('class', 'col-2');
+  // const endTurnBtnHoldingCol = document.createElement('div');
+  // endTurnBtnHoldingCol.setAttribute('class', 'col-2');
   // ====end turn button
-  const endTurnBtn = document.createElement('button');
-  endTurnBtn.innerHTML = 'End Current Turn';
-  endTurnBtn.setAttribute('class', 'endTurnBtn');
-  endTurnBtnHoldingCol.appendChild(endTurnBtn);
-  endTurnBtnHoldingCol.addEventListener('click', endPlayerTurn);
+  const endTurnBtn = document.querySelector('.endTurnBtn');
+  endTurnBtn.addEventListener('click', endPlayerTurn);
 
   // ==button to end turn (col)
-  const endCurrGameBtnHoldingCol = document.createElement('div');
-  endCurrGameBtnHoldingCol.setAttribute('class', 'col-2');
+  // const endCurrGameBtnHoldingCol = document.createElement('div');
+  // endCurrGameBtnHoldingCol.setAttribute('class', 'col-2');
   // ====end current game
-  const endCurrentGameBtn = document.createElement('button');
-  endCurrentGameBtn.setAttribute('class', 'endCurrentGameBtn');
+  const endCurrentGameBtn = document.querySelector('.endGameBtn');
+
   endCurrentGameBtn.addEventListener('click', () => {
     // make an axios put to end the current game (i.e. change liveStatus to false)
-    axios.put('/endCurrGameWoWinner', { currGameId })
+    axios.put('/endCurrGame', { currGameId })
       .then(() => {
-        console.log('this should end the current game');
         document.querySelector('.modal').style.display = 'block';
       })
       .catch((error) => {
         console.log(error);
         console.log('redirect to external website');
-        window.location.href = 'https://www.google.com';
+        window.location = 'http://localhost:3004';
       });
   });
-  endCurrentGameBtn.innerHTML = 'End Current Game';
-  endCurrGameBtnHoldingCol.appendChild(endCurrentGameBtn);
+  // endCurrentGameBtn.innerHTML = 'End Current Game';
+  // endCurrGameBtnHoldingCol.appendChild(endCurrentGameBtn);
 
   // create a row to hold cards in current player's hand
-  const currPlayerHand = document.createElement('div');
-  currPlayerHand.setAttribute('class', 'currPlayerHand row');
+  // const currPlayerHand = document.createElement('div');
+  // currPlayerHand.setAttribute('class', 'currPlayerHand row');
 
   // create the modal to display when someone wins
   const modal = document.createElement('div');
@@ -128,39 +125,27 @@ const buildBoardEls = () => {
 
   // ==create the button that brings user to new game
   const newGameBtn = document.createElement('button');
+  newGameBtn.innerHTML = 'New Game';
   newGameBtn.setAttribute('class', 'btn btn-primary');
   newGameBtn.addEventListener('click', () => {
-    axios.post('/')
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => { console.log(error); });
+    window.location = 'http://localhost:3004';
+    // axios.post('/createGame')
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((error) => { console.log(error); });
   });
 
   // append to:
-  // playingAreaCol0
-
-  //! !!!!!!!!!!!!!!!!!
-
-  // query selector belwo will not work becos the row it has not been appended to the document as of yet! (it was appended to the container but the container is not appended to the body until this funciton is complete )
-  //! !!!!!!!!!!!!!!!!!
-
-  document.querySelector('.playingAreaCol0').appendChild(deck);
-  // playingAreaCol1
-  document.querySelector('.playingAreaCol1').appendChild(referenceCardPileSubheader);
-  document.querySelector('.playingAreaCol1').appendChild(referenceCardPile);
-  // playingAreaCol2
-  document.querySelector('.playingAreaCol2').appendChild(discardPileSubheader);
-  document.querySelector('.playingAreaCol2').appendChild(discardPile);
 
   // infobar
-  infoRow.appendChild(turnDisplay);
-  infoRow.appendChild(endTurnBtnHoldingCol);
-  infoRow.appendChild(endCurrGameBtnHoldingCol);
+  // infoRow.appendChild(turnDisplay);
+  // infoRow.appendChild(endTurnBtnHoldingCol);
+  // infoRow.appendChild(endCurrGameBtnHoldingCol);
   // container
-  container.appendChild(playingArea);
-  container.appendChild(infoRow);
-  container.appendChild(currPlayerHand);
+  // container.appendChild(playingArea);
+  // container.appendChild(infoRow);
+  // container.appendChild(currPlayerHand);
 
   // modal container
   modalContainer.appendChild(closeModal);
@@ -176,25 +161,41 @@ const buildBoardEls = () => {
   // remove start button
   const startGameBtn = document.querySelector('.startGameBtn');
   document.body.removeChild(startGameBtn);
-
-  return container;
 };
 
 const displayCardsInPlayerHand = (arrayOfCards, referenceCardPileTopCard, discardPile) => {
-  document.querySelector('.currPlayerHand').innerHTML = '';
+  // empty the entire col (to rebuild the els)
+  document.querySelector('.currPlayerHandCol').innerHTML = '';
 
   arrayOfCards.forEach((element, index) => {
+    // create the card
     const cardEls = document.createElement('div');
-    cardEls.setAttribute('class', 'cardEls col-2');
-    cardEls.innerHTML = `${element.name} of ${element.suit}`;
-    cardEls.addEventListener('click', (e) => {
-      console.log('element is:');
-      console.log(element);
-      console.log('e.currentTarget is:');
-      console.log(e.currentTarget);
+    cardEls.setAttribute('class', 'cardEls');
 
-      console.log('index is:');
-      console.log(index);
+    // create the number at the top of the card
+    const cardDisplayTop = document.createElement('div');
+    cardDisplayTop.setAttribute('class', 'cardDisplayTop');
+    cardDisplayTop.innerHTML = element.display;
+
+    // create the suit symbol in the centre of card
+    const cardDisplaySuit = document.createElement('div');
+    cardDisplaySuit.setAttribute('class', 'cardDisplaySuit');
+    cardDisplaySuit.innerHTML = element.suitSymbol;
+
+    // create the number at the top of the card
+    const cardDisplayBottom = document.createElement('div');
+    cardDisplayBottom.setAttribute('class', 'cardDisplayBottom');
+    cardDisplayBottom.innerHTML = element.display;
+
+    // cardEls.innerHTML = `${element.display} of ${element.suitSymbol}`;
+    cardEls.appendChild(cardDisplayTop);
+    cardEls.appendChild(cardDisplaySuit);
+    cardEls.appendChild(cardDisplayBottom);
+
+    // change the card's font color to reflect color the suit
+    cardEls.style.color = `${element.color}`;
+    // add an event listener to each of the cards
+    cardEls.addEventListener('click', (e) => {
       // go to server to validate if user is authorised to discard card,then update gameState if nec
       axios.post('/validateDiscardingOfCard', {
         element, referenceCardPileTopCard, index, currGameId,
@@ -206,10 +207,39 @@ const displayCardsInPlayerHand = (arrayOfCards, referenceCardPileTopCard, discar
 
       // user cannot discard card becos it is opponent's turn
     });
-    document.querySelector('.currPlayerHand').appendChild(cardEls);
+    document.querySelector('.currPlayerHandCol').appendChild(cardEls);
   });
 };
 
+const handleWin = (winnerDetails) => {
+// do an axios.put to update statusLive to false
+  console.log('triggering axios to update db liveStatus');
+  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  axios.put('/endCurrGame', { currGameId })
+    .then(() => {
+      const cookieString = document.cookie;
+      const positionOfUserId = cookieString.indexOf('userId=');
+      // eslint-disable-next-line
+      const userIdViaCookieString = Number(cookieString.substring(positionOfUserId + 7, positionOfUserId + 8));
+
+      console.log('userIdViaCookieString');
+      console.log(userIdViaCookieString);
+      console.log('winnerDetails.id');
+      console.log(winnerDetails.id);
+
+      // tailor the modal message depending on who won
+      if (userIdViaCookieString === Number(winnerDetails.id)) {
+        document.querySelector('.modalTextContent').innerHTML = 'You won!';
+        document.querySelector('.modal').style.display = 'block';
+      }
+
+      document.querySelector('.modalTextContent').innerHTML = 'You lost!';
+      document.querySelector('.modal').style.display = 'block';
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 const updateCardElsWContent = ({ data }) => {
   console.log('starting to update card Els W content');
   console.log(' line 107 data is:');
@@ -224,30 +254,59 @@ const updateCardElsWContent = ({ data }) => {
   }
   // trigger win modal if there is a winner
   if (won === true) {
-    // do an axios.put to update statusLive to false
-
-    // unhhide modal
-    document.querySelector('.modal').style.display = 'block';
-
-    document.querySelector('.modal-content').innerHTML = 'Hi there!';
+    handleWin(winnerDetails);
   }
-
-  // display the draw pile(which is just the back of a card)
-  document.querySelector('.drawPile').innerHTML = `drawPile
-  ====
-  cardsLeft= ${drawPile.length}`;
+  console.log('drawPile.length is:');
+  console.log(drawPile.length);
+  // update the cards left banner
+  document.querySelector('.cardsLeftBanner').innerHTML = `${drawPile.length} cards left`;
+  // display the draw pile if there are cards in it
+  if (drawPile.length <= 0) {
+    document.querySelector('.drawPileCardContainer').style.background = 'none';
+  }
 
   // identify the top card in the referenceCardPile (i.e. taken from drawPile in server-side logic)
   const referenceCardPileTopCard = referenceCardPile[referenceCardPile.length - 1];
 
   // display the above card in draw pile
-  document.querySelector('.referenceCardPile').innerHTML = `${referenceCardPileTopCard.name} of ${referenceCardPileTopCard.suit}`;
+  const referenceCardPileCardContainer = document.querySelector('.referenceCardPileCardContainer');
+  // referenceCardPileCardContainer.innerHTML = `${referenceCardPileTopCard.display} of ${referenceCardPileTopCard.suitSymbol}`;
+  // add the number at top of the card
+  referenceCardPileCardContainer.querySelector('.cardDisplayTop').innerHTML = `${referenceCardPileTopCard.display}`;
+  // add the symbol in the middle of the card
+  referenceCardPileCardContainer.querySelector('.cardDisplaySuit').innerHTML = `${referenceCardPileTopCard.suitSymbol}`;
 
-  document.querySelector('.discardPile').innerHTML = '';
+  // add the number at bottom of the card
+  referenceCardPileCardContainer.querySelector('.cardDisplayBottom').innerHTML = `${referenceCardPileTopCard.display}`;
+
+  // change the card's font color to reflect color the suit
+  referenceCardPileCardContainer.style.color = `${referenceCardPileTopCard.color}`;
+
+  // get the html element for the discardPile
+  // const discardPileCardContainer = document.querySelector('.discardPileCardContainer');
+  const discardPileCardContainer = document.querySelector('.discardPileCardContainer');
+
+  // show the discard pile
+  // empty the container
+  discardPileCardContainer.querySelector('.cardDisplayTop').innerHTML = '';
+  discardPileCardContainer.querySelector('.cardDisplaySuit').innerHTML = '';
+  discardPileCardContainer.querySelector('.cardDisplayBottom').innerHTML = '';
+
   // display the top card in discardPile (if it has any cards)
   if (discardPile.length > 0) {
-    document.querySelector('.discardPile').innerHTML = `${discardPile[discardPile.length - 1].name} of ${discardPile[discardPile.length - 1].suit}`;
-  }
+    // identify the top card
+    const discardPileTopCard = discardPile[discardPile.length - 1];
+
+    // add the number at top of the card
+    discardPileCardContainer.querySelector('.cardDisplayTop').innerHTML = `${discardPileTopCard.display}`;
+    // add the symbol in the middle of the card
+    discardPileCardContainer.querySelector('.cardDisplaySuit').innerHTML = `${discardPileTopCard.suitSymbol}`;
+
+    // add the number at bottom of the card
+    discardPileCardContainer.querySelector('.cardDisplayBottom').innerHTML = `${discardPileTopCard.display}`;
+
+    // change the card's font color to reflect color the suit
+    discardPileCardContainer.style.color = `${discardPileTopCard.color}`; }
 
   // display the cards in player's hand
   displayCardsInPlayerHand(playerHand, referenceCardPileTopCard, discardPile);
@@ -257,7 +316,8 @@ const updateCardElsWContent = ({ data }) => {
 
 const startGameBtnLogic = () => {
 // build the board elements
-  document.body.appendChild(buildBoardEls());
+  // document.body.appendChild(buildBoardEls());
+  buildBoardEls();
   console.log('done creating board Els');
 
   // create the game

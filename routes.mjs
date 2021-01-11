@@ -87,7 +87,9 @@ export default function routes(app) {
   app.put('/endPlayerTurn', GamesController.endPlayerTurn);
 
   // end the current game even w/o a winner
-  app.put('/endCurrGameWoWinner', GamesController.endCurrGame);
+  app.put('/endCurrGame', GamesController.endCurrGame);
+  // end the current game even w a winner
+  // app.put('/endCurrGameWithWinner', GamesController.endCurrGame);
 
   app.post('/validateDiscardingOfCard', GamesController.validateDiscardingOfCard);
   app.get('/', verifySession, (request, response) => {

@@ -2,56 +2,102 @@ body {
   background-color: pink;
 }
 
+// .container {
+//   display: none;
+// }
 .hideable {
   display: none;
 }
 
-.playingArea {
+.playingAreaRow {
   background-color: rgb(46, 89, 196);
+  height: 8rem;
+}
+.playingAreaSubheader {
+  font-size: 0.8rem;
+  color: whitesmoke;
 }
 
-.playerHand {
-  width: 800px;
-  height: 400px;
-  background-color: rgb(184, 230, 184);
+.infoBarRow {
+  height: 4rem;
+  align-items: center;
+}
+.currPlayerHand {
+  min-height: 10rem;
+  display: inline-flex;
 }
 
 .cardEls {
-  font-size: 0.5rem;
+  font-size: 0.6rem;
   width: 3rem;
-  height: 5rem;
+  height: 4.2rem;
   border: solid black;
   border-width: 1px;
+  border-radius: 5%;
   background-color: white;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
   margin: 0.2rem;
+  padding: 0.1rem;
 }
-.discardPile,
-.drawPile,
-.referenceCardPile {
-  font-size: 0.5rem;
-  width: 3rem;
-  height: 5rem;
-  border: solid black;
-  border-width: 1px;
-  background-color: white;
-  display: inline-block;
-  margin: 0.5rem;
+.cardEls:hover {
+  background-color: rgb(222, 216, 216);
 }
-.drawPile {
-  font-size: 0.5rem;
-  width: 3rem;
-  height: 5rem;
-  border: solid black;
-  border-width: 1px;
-  background-color: white;
-  display: inline-block;
-  margin: 0.5rem;
+.cardDisplayTop {
+  text-align: left;
+}
+.cardDisplaySuit {
+  text-align: center;
+}
+.cardDisplayBottom {
+  text-align: right;
 }
 
-.descriptionHidden {
-  display: none;
+.drawPileCardContainer {
+  background-image: url("https://playcards.live/cards/back.jpg");
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
 }
+
+.cardsLeftBanner {
+  background-color: black;
+  opacity: 70%;
+  text-align: center;
+  color: white;
+  width: 100%;
+  margin: 0px;
+}
+
+// .discardPile,
+// .drawPile,
+// .referenceCardPile {
+//   font-size: 0.5rem;
+//   width: 3rem;
+//   height: 5rem;
+//   border: solid black;
+//   border-width: 1px;
+//   background-color: white;
+//   display: inline-block;
+//   margin: 0.5rem;
+// }
+// .drawPile {
+//   font-size: 0.5rem;
+//   width: 3rem;
+//   height: 5rem;
+//   border: solid black;
+//   border-width: 1px;
+//   background-color: white;
+//   display: inline-block;
+//   margin: 0.5rem;
+// }
+
+// .descriptionHidden {
+//   display: none;
+// }
 //========CONCERNING MODAL==============
 #descriptionHidden {
   display: none;

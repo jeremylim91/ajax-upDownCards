@@ -6,6 +6,7 @@ const { Op } = pkg;
 const { makeDeck, shuffleCards } = cardDeckFns;
 
 const checkWin = (playerHandArr, drawPile) => {
+  let outcome = false;
   let winnerDetails = null;
 
   console.log('evaluating win');
@@ -17,45 +18,48 @@ const checkWin = (playerHandArr, drawPile) => {
   playerHandArr.forEach((element) => {
     if (element.cards.length === 0) {
       console.log(`winner is ${element.id}`);
-      winnerDetails = element.id;
-
-      return {
-        outcome: true,
-        winnerDetails,
-      };
+      outcome = true;
+      winnerDetails = element;
     }
   });
+
   // win condition 2:
   // determine when draw pile runs out of cards:
   let playerWithLowestPoints = null;
-  let lowestPoints = 100;
+  let lowestPoints = 10000;
   if (drawPile.length === 0) {
+    console.log('draw pile length is 0');
     // count who has the lowest number of points
     playerHandArr.forEach((player, playerIndex) => {
       let totalPoints = 0;
+      // console.log(`total points for player ${playerIndex} is ${totalPoints}`);
       // count the sum of points in each player's hand
-      player.cards.forEach((card) => {
-        totalPoints += card.rank;
+      player.cards.forEach((element) => {
+        totalPoints += element.rank;
       });
       // create a new key/value pair that stores that player's points
       playerHandArr[playerIndex].points = totalPoints;
 
+      console.log('playerHandArr[playerIndex].points');
+      console.log(playerHandArr[playerIndex].points);
+
+      console.log('player.points is:');
+      console.log(player.points);
       // determine which player has the most points
       if (player.points <= lowestPoints) {
         lowestPoints = player.points;
+        console.log('lowestPoints is:');
+        console.log(lowestPoints);
         playerWithLowestPoints = player;
-        console.log('playerWithLargestPoints.id is:');
+        console.log('playerWithLowestPoints.id is:');
         console.log(playerWithLowestPoints.id);
       }
     });
+    outcome = true;
     winnerDetails = playerWithLowestPoints;
-    return {
-      outcome: true,
-      winnerDetails,
-    };
   }
   return {
-    outcome: false,
+    outcome,
     winnerDetails,
   };
 };
@@ -130,7 +134,9 @@ export default function games(db) {
       // for (let i = 0; i < 10; i += 1) {
       //   drawPile.push(deck.pop());
       // }
-      for (let i = 0; i < 10; i += 1) {
+
+      // change to 3 for testing
+      for (let i = 0; i < 3; i += 1) {
         drawPile.push(deck.pop());
       }
       // set the reference & move drawPile's top card into  discardPile; this is the starting card
@@ -144,7 +150,8 @@ export default function games(db) {
       const player2Hand = [];
 
       // deal remaining cards from deck into each of of the players' hand.
-      while (deck.length > 0) {
+      // changed from 0 to 30 for testing
+      while (deck.length > 44) {
         if (deck.length % 2 === 1) {
           player2Hand.push(deck.pop());
         } else {
@@ -213,7 +220,7 @@ export default function games(db) {
       console.error(error);
     }
   };
-
+  //= ===================================================================
   const validateDiscardingOfCard = async (req, res) => {
     let won = false;
     // const winnerDetails = null;
@@ -304,6 +311,7 @@ export default function games(db) {
 
         // this doesn't work:
         // await currGameInstance.update({ id: gameId, gameState: newGameState });
+
         // check if anyone has won
         const { outcome, winnerDetails } = checkWin(playerHandArr, drawPile);
         if (outcome === true) {
@@ -343,6 +351,8 @@ export default function games(db) {
   };
 
   const endPlayerTurn = async (req, res) => {
+    let won = false;
+
     const { currGameId: gameId } = req.body;
     try {
       const currGameInstance = await db.Game.findByPk(gameId);
@@ -353,14 +363,11 @@ export default function games(db) {
 
       // increase whoseTurn by 1
       let newWhoseTurn = whoseTurn + 1;
-      console.log('newWhoseTurn-1');
-      console.log(newWhoseTurn);
-      // if whoseTurn exceeds the length of playerHandArr, reset to 1
+
+      // if whoseTurn exceeds the length of playerHandArr, reset to 0
       if (newWhoseTurn > playerHandArr.length - 1) {
         newWhoseTurn = 0;
       }
-      console.log('newWhoseTurn-2');
-      console.log(newWhoseTurn);
 
       /* set conditions that tell you when players pass turns consecutively w/o playing cards.
       1. if the players passed their turn w/o playing cards,
@@ -378,6 +385,10 @@ export default function games(db) {
         newPassedTurnWoPlayingCards = passedTurnWoPlayingCards + 1;
       }
 
+      // else if (discardPile.length > 0) {
+      //   newPassedTurnWoPlayingCards = 0;
+      // }
+
       // take the discardPile and place it into the referenceCardPile
       newReferenceCardPile = [...referenceCardPile, ...discardPile];
 
@@ -387,6 +398,9 @@ export default function games(db) {
         drawPileTopCard = drawPile.pop();
         // add the card to the reference pile
         newReferenceCardPile = [...referenceCardPile, drawPileTopCard];
+
+        // reset new PassedTurnWoPlayingCards
+        newPassedTurnWoPlayingCards = 0;
       }
 
       console.log('newReferenceCardPile is:');
@@ -406,8 +420,12 @@ export default function games(db) {
       };
       currGameInstance.save();
 
-      console.log('currGameInstance is:');
-      console.log(currGameInstance);
+      // check if anyone has won
+      const { outcome, winnerDetails } = checkWin(playerHandArr, drawPile);
+      if (outcome === true) {
+        console.log('sending back winner details');
+        won = true;
+      }
 
       currGameInstance.gameState.playerHandArr.forEach((element, index) => {
         if (element.id === Number(req.cookies.userId)) {
@@ -418,15 +436,11 @@ export default function games(db) {
             discardPile: currGameInstance.gameState.discardPile,
             playerHand: currGameInstance.gameState.playerHandArr[index].cards,
             turn: index,
-            won: false,
-            winnerDetails: null,
+            won,
+            winnerDetails,
           });
-          console.log('currGameInstance.gameState.discardPile is: ');
-          console.log(currGameInstance.gameState.discardPile);
         }
       });
-
-      //= ==========================
     } catch (error) {
       res.status(500).send(error);
       console.error(error);
@@ -438,8 +452,8 @@ export default function games(db) {
     const { currGameId: gameId } = req.body;
     try {
       const currGameInstance = await db.Game.findByPk(gameId);
-      console.log('end CurrGem currGameInstance:');
-      console.log(currGameInstance);
+      // console.log('end CurrGem currGameInstance:');
+      // console.log(currGameInstance);
       currGameInstance.liveStatus = false;
       currGameInstance.save();
       res.send();

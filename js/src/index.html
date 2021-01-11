@@ -25,18 +25,43 @@
       integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
       crossorigin="anonymous"
     ></script>
-    <div class="container playingAreaRow hideable">
-      <div class="row">
-        <div class="col">col1</div>
-        <div class="col">col2</div>
-        <div class="col">col3</div>
+    <div class="container hideable">
+      <div class="row playingAreaRow">
+        <div class="col">
+          <div class="playingAreaSubheader">Draw Pile:</div>
+          <div class="drawPileCardContainer cardEls">
+            <div class="cardsLeftBanner"></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="playingAreaSubheader">Reference Card:</div>
+          <div class="referenceCardPileCardContainer cardEls">
+            <div class="cardDisplayTop"></div>
+            <div class="cardDisplaySuit"></div>
+            <div class="cardDisplayBottom"></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="playingAreaSubheader">Discard Pile:</div>
+          <div class="discardPileCardContainer cardEls">
+            <div class="cardDisplayTop"></div>
+            <div class="cardDisplaySuit"></div>
+            <div class="cardDisplayBottom"></div>
+          </div>
+        </div>
       </div>
-      <div class="row infoBar">
-        <div class="col infoBarCol"></div>
-        <div class="col infoBarCol"></div>
-        <div class="col infoBarCol"></div>
+      <div class="row infoBarRow">
+        <div class="col infoBarCol">Turn:</div>
+        <div class="col infoBarCol">
+          <button class="btn btn-primary endTurnBtn">End turn</button>
+        </div>
+        <div class="col infoBarCol">
+          <button class="btn btn-primary endGameBtn">End game</button>
+        </div>
       </div>
-      <div class="row currPlayerHand"></div>
+      <div class="row currPlayerHand">
+        <div class="col currPlayerHandCol"></div>
+      </div>
     </div>
   </body>
 </html>
