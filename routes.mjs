@@ -83,7 +83,11 @@ export default function routes(app) {
   app.post('/createGame', GamesController.create);
   // special JS page. Include the webpack index.html file
 
+  // end the player's turn
   app.put('/endPlayerTurn', GamesController.endPlayerTurn);
+
+  // end the current game even w/o a winner
+  app.put('/endCurrGameWoWinner', GamesController.endCurrGame);
 
   app.post('/validateDiscardingOfCard', GamesController.validateDiscardingOfCard);
   app.get('/', verifySession, (request, response) => {

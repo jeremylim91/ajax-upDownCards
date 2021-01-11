@@ -6,7 +6,7 @@ const { Op } = pkg;
 const { makeDeck, shuffleCards } = cardDeckFns;
 
 const checkWin = (playerHandArr, drawPile) => {
-  let winnerId = null;
+  let winnerDetails = null;
 
   console.log('evaluating win');
   /* two possible criteria for win (either or):
@@ -17,11 +17,11 @@ const checkWin = (playerHandArr, drawPile) => {
   playerHandArr.forEach((element) => {
     if (element.cards.length === 0) {
       console.log(`winner is ${element.id}`);
-      winnerId = element.id;
+      winnerDetails = element.id;
 
       return {
         outcome: true,
-        winnerId,
+        winnerDetails,
       };
     }
   });
@@ -48,15 +48,15 @@ const checkWin = (playerHandArr, drawPile) => {
         console.log(playerWithLowestPoints.id);
       }
     });
-    winnerId = playerWithLowestPoints;
+    winnerDetails = playerWithLowestPoints;
     return {
       outcome: true,
-      winnerId,
+      winnerDetails,
     };
   }
   return {
     outcome: false,
-    winnerId,
+    winnerDetails,
   };
 };
 
@@ -73,9 +73,6 @@ export default function games(db) {
         },
       }))[0];
 
-      // const existingGameInstance = (await userInstance.getGames(where:{
-      //   colNameSTatus: Value
-      // }))[0];
       /* manage 2 scenarios:
       1. player is alr in-game W someone else,
       so just render the board using info from existing game
@@ -104,11 +101,7 @@ export default function games(db) {
         });
         return;
       }
-
-      // need an else statement here?
-
-      // scenario2: not in-game
-
+      // scenario2: not in-game:
       // get the instance of the first user based on his cookies
       const player1Instance = await db.User.findByPk(req.cookies.userId);
 
@@ -133,6 +126,10 @@ export default function games(db) {
       const drawPile = [];
 
       // remove 10 cards from the deck and place them  in drawPile
+      // commented out for testing with only 1 card in draw pile
+      // for (let i = 0; i < 10; i += 1) {
+      //   drawPile.push(deck.pop());
+      // }
       for (let i = 0; i < 10; i += 1) {
         drawPile.push(deck.pop());
       }
@@ -219,7 +216,7 @@ export default function games(db) {
 
   const validateDiscardingOfCard = async (req, res) => {
     let won = false;
-    const winnerDetails = null;
+    // const winnerDetails = null;
 
     /* Two levels of validation required here:
       1. (pending): is it user's turn to make a move?
@@ -242,12 +239,7 @@ export default function games(db) {
 
       // start level 1 validation: is it curr player's turn to make a move?
       // lvl_1_validation_FAIL:
-      console.log('whoseTurn is:');
-      console.log(whoseTurn);
-      console.log('playerHandArr is:');
-      console.log(playerHandArr);
-      console.log('playerHandArr[whoseTurn].id');
-      console.log(playerHandArr[Number(whoseTurn)].id);
+
       if (playerHandArr[whoseTurn].id !== Number(req.cookies.userId)) {
         console.log('lvl1 validation fail');
         // sending a non-200 status would trigger catch in client side
@@ -313,7 +305,7 @@ export default function games(db) {
         // this doesn't work:
         // await currGameInstance.update({ id: gameId, gameState: newGameState });
         // check if anyone has won
-        const { outcome, winnerId } = checkWin();
+        const { outcome, winnerDetails } = checkWin(playerHandArr, drawPile);
         if (outcome === true) {
           console.log('sending back winner details');
           won = true;
@@ -441,5 +433,23 @@ export default function games(db) {
     }
   };
 
-  return { create, validateDiscardingOfCard, endPlayerTurn };
+  const endCurrGame = async (req, res) => {
+    console.log('ending current game');
+    const { currGameId: gameId } = req.body;
+    try {
+      const currGameInstance = await db.Game.findByPk(gameId);
+      console.log('end CurrGem currGameInstance:');
+      console.log(currGameInstance);
+      currGameInstance.liveStatus = false;
+      currGameInstance.save();
+      res.send();
+    } catch (error) {
+      res.status(500).send(error);
+      console.error(error);
+    }
+  };
+
+  return {
+    create, validateDiscardingOfCard, endPlayerTurn, endCurrGame,
+  };
 }

@@ -33,15 +33,35 @@ const buildBoardEls = () => {
   const playingArea = document.createElement('div');
   playingArea.setAttribute('class', 'playingArea row');
 
-  // ==deck (col)
+  // == ==playing area (col) (3 of them)
+  for (let n = 0; n < 3; n += 1) {
+    const playingAreaCol = document.createElement('div');
+    playingAreaCol.setAttribute('class', `playingAreaCol${n} col-2`);
+    playingAreaCol.innerHTML = `hllo ${n}`;
+    playingArea.appendChild(playingAreaCol);
+  }
+  // == == ==deck
+  const drawPileSubheader = document.createElement('h2');
+  drawPileSubheader.setAttribute('class', 'playingAreaSubheader');
+
   const deck = document.createElement('div');
-  deck.setAttribute('class', 'drawPile col');
-  // ==reference pile (col)
+  deck.setAttribute('class', 'drawPile');
+
+  // == == ==reference pile
+  const referenceCardPileSubheader = document.createElement('div');
+  referenceCardPileSubheader.setAttribute('class', 'playingAreaSubheader');
+  referenceCardPileSubheader.innerHTML = 'Reference card:';
+
   const referenceCardPile = document.createElement('div');
-  referenceCardPile.setAttribute('class', 'referenceCardPile col');
-  // ==discard pile (col)
+  referenceCardPile.setAttribute('class', 'referenceCardPile');
+
+  // == == ==discard pile
+  const discardPileSubheader = document.createElement('div');
+  discardPileSubheader.setAttribute('class', 'playingAreaSubheader');
+  discardPileSubheader.innerHTML = 'Discard Pile:';
+
   const discardPile = document.createElement('div');
-  discardPile.setAttribute('class', 'discardPile col');
+  discardPile.setAttribute('class', 'discardPile');
 
   // create info bar that provides info and playing btns(row)
   const infoRow = document.createElement('div');
@@ -54,12 +74,34 @@ const buildBoardEls = () => {
   // ==button to end turn (col)
   const endTurnBtnHoldingCol = document.createElement('div');
   endTurnBtnHoldingCol.setAttribute('class', 'col-2');
-  // ==end turn button
+  // ====end turn button
   const endTurnBtn = document.createElement('button');
   endTurnBtn.innerHTML = 'End Current Turn';
   endTurnBtn.setAttribute('class', 'endTurnBtn');
   endTurnBtnHoldingCol.appendChild(endTurnBtn);
   endTurnBtnHoldingCol.addEventListener('click', endPlayerTurn);
+
+  // ==button to end turn (col)
+  const endCurrGameBtnHoldingCol = document.createElement('div');
+  endCurrGameBtnHoldingCol.setAttribute('class', 'col-2');
+  // ====end current game
+  const endCurrentGameBtn = document.createElement('button');
+  endCurrentGameBtn.setAttribute('class', 'endCurrentGameBtn');
+  endCurrentGameBtn.addEventListener('click', () => {
+    // make an axios put to end the current game (i.e. change liveStatus to false)
+    axios.put('/endCurrGameWoWinner', { currGameId })
+      .then(() => {
+        console.log('this should end the current game');
+        document.querySelector('.modal').style.display = 'block';
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log('redirect to external website');
+        window.location.href = 'https://www.google.com';
+      });
+  });
+  endCurrentGameBtn.innerHTML = 'End Current Game';
+  endCurrGameBtnHoldingCol.appendChild(endCurrentGameBtn);
 
   // create a row to hold cards in current player's hand
   const currPlayerHand = document.createElement('div');
@@ -73,14 +115,18 @@ const buildBoardEls = () => {
   const closeModal = document.createElement('span');
   closeModal.setAttribute('class', 'close');
   closeModal.innerHTML = 'x';
-  modal.appendChild(closeModal);
+  closeModal.addEventListener('click', () => {
+    document.querySelector('.modal').style.display = 'none';
+  });
+  // ==create modal's container
+  const modalContainer = document.createElement('div');
+  modalContainer.setAttribute('class', 'modal-content');
 
-  // ==create the div to contain content inside the modal
-  const modalContent = document.createElement('div');
-  modalContent.setAttribute('class', 'modal-content');
-  modal.appendChild(modalContent);
+  // set the para element that has text inside the modal container
+  const modalTextContent = document.createElement('p');
+  modalTextContent.setAttribute('class', 'modalTextContent');
 
-  // ==create the button that brings user to refresh the page
+  // ==create the button that brings user to new game
   const newGameBtn = document.createElement('button');
   newGameBtn.setAttribute('class', 'btn btn-primary');
   newGameBtn.addEventListener('click', () => {
@@ -90,21 +136,39 @@ const buildBoardEls = () => {
       })
       .catch((error) => { console.log(error); });
   });
-  modal.appendChild(newGameBtn);
 
   // append to:
-  // playing area
-  playingArea.appendChild(deck);
-  playingArea.appendChild(referenceCardPile);
-  playingArea.appendChild(discardPile);
+  // playingAreaCol0
+
+  //! !!!!!!!!!!!!!!!!!
+
+  // query selector belwo will not work becos the row it has not been appended to the document as of yet! (it was appended to the container but the container is not appended to the body until this funciton is complete )
+  //! !!!!!!!!!!!!!!!!!
+
+  document.querySelector('.playingAreaCol0').appendChild(deck);
+  // playingAreaCol1
+  document.querySelector('.playingAreaCol1').appendChild(referenceCardPileSubheader);
+  document.querySelector('.playingAreaCol1').appendChild(referenceCardPile);
+  // playingAreaCol2
+  document.querySelector('.playingAreaCol2').appendChild(discardPileSubheader);
+  document.querySelector('.playingAreaCol2').appendChild(discardPile);
 
   // infobar
   infoRow.appendChild(turnDisplay);
   infoRow.appendChild(endTurnBtnHoldingCol);
+  infoRow.appendChild(endCurrGameBtnHoldingCol);
   // container
   container.appendChild(playingArea);
   container.appendChild(infoRow);
   container.appendChild(currPlayerHand);
+
+  // modal container
+  modalContainer.appendChild(closeModal);
+  modalContainer.appendChild(modalTextContent);
+  modalContainer.appendChild(newGameBtn);
+
+  // modal
+  modal.appendChild(modalContainer);
 
   // document
   document.body.appendChild(modal);
@@ -208,7 +272,7 @@ const startGameBtnLogic = () => {
 const initPage = () => {
   // create start game button elements
   const startGameBtn = document.createElement('button');
-  startGameBtn.setAttribute('class', 'startGameBtn');
+  startGameBtn.setAttribute('class', 'startGameBtn btn btn-primary');
   startGameBtn.innerHTML = 'Start';
   startGameBtn.addEventListener('click', startGameBtnLogic);
   document.body.appendChild(startGameBtn);
