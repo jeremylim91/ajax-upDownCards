@@ -91,6 +91,8 @@ export default function routes(app) {
   // end the current game even w a winner
   // app.put('/endCurrGameWithWinner', GamesController.endCurrGame);
 
+  app.post('/refresh', GamesController.refreshPage);
+
   app.post('/validateDiscardingOfCard', GamesController.validateDiscardingOfCard);
   app.get('/', verifySession, (request, response) => {
     response.sendFile(resolve('js/dist', 'index.html'));

@@ -88,6 +88,13 @@ export default function games(db) {
       if (existingGameInstance !== undefined) {
         console.log('user has an existing game');
 
+        console.log('existingGameInstance.dataValues.gameState.playerHandArr');
+        console.log(existingGameInstance.dataValues.gameState.playerHandArr);
+        const { playerHandArr, whoseTurn } = existingGameInstance.dataValues.gameState;
+
+        // console.log('playerHandArr[whoseTurn]');
+        // console.log(playerHandArr[whoseTurn]);
+
         // send the board elements of his exsiting game so that the client renders it
         existingGameInstance.gameState.playerHandArr.forEach((element, index) => {
           if (element.id === Number(req.cookies.userId)) {
@@ -97,7 +104,7 @@ export default function games(db) {
               referenceCardPile: existingGameInstance.gameState.referenceCardPile,
               discardPile: existingGameInstance.gameState.discardPile,
               playerHand: existingGameInstance.gameState.playerHandArr[index].cards,
-              turn: index,
+              turn: playerHandArr[whoseTurn].id,
               won: false,
               winnerDetails: null,
             });
@@ -197,10 +204,6 @@ export default function games(db) {
 
       // send the game info back to the client browser, depending on his userId
       gameInstance.gameState.playerHandArr.forEach((element, index) => {
-        console.log('element.id is:');
-        console.log(element.id);
-        console.log('req.cookies.userId is:');
-        console.log(req.cookies.userId);
         if (element.id === Number(req.cookies.userId)) {
           console.log('id and cookies match');
           res.send({
@@ -209,7 +212,7 @@ export default function games(db) {
             referenceCardPile: gameInstance.gameState.referenceCardPile,
             discardPile: gameInstance.gameState.discardPile,
             playerHand: gameInstance.gameState.playerHandArr[index].cards,
-            turn: index,
+            turn: playerHandArr[gameInstance.gameState.whoseTurn].id,
             won: false,
             winnerDetails: null,
           });
@@ -293,7 +296,6 @@ export default function games(db) {
           }
         });
 
-        // const newPlayerHandArr.splice()
         // update the model that with the new gameState
 
         currGameInstance.gameState = {
@@ -318,6 +320,8 @@ export default function games(db) {
           console.log('sending back winner details');
           won = true;
         }
+        console.log('playerHandArr[whoseTurn]');
+        console.log(playerHandArr[whoseTurn]);
 
         // send the game info back to the client browser, depending on his userId
         currGameInstance.gameState.playerHandArr.forEach((element, index) => {
@@ -329,7 +333,7 @@ export default function games(db) {
               referenceCardPile: currGameInstance.gameState.referenceCardPile,
               discardPile: currGameInstance.gameState.discardPile,
               playerHand: currGameInstance.gameState.playerHandArr[index].cards,
-              turn: index,
+              turn: playerHandArr[currGameInstance.gameState.whoseTurn].id,
               won,
               winnerDetails,
             });
@@ -403,9 +407,6 @@ export default function games(db) {
         newPassedTurnWoPlayingCards = 0;
       }
 
-      console.log('newReferenceCardPile is:');
-      console.log(newReferenceCardPile);
-
       // update db with newReferenceCardPile, empty the discardPile, and newWHoseTurn,
       currGameInstance.gameState = {
         drawPile,
@@ -435,7 +436,7 @@ export default function games(db) {
             referenceCardPile: currGameInstance.gameState.referenceCardPile,
             discardPile: currGameInstance.gameState.discardPile,
             playerHand: currGameInstance.gameState.playerHandArr[index].cards,
-            turn: index,
+            turn: playerHandArr[currGameInstance.gameState.whoseTurn].id,
             won,
             winnerDetails,
           });
@@ -463,7 +464,40 @@ export default function games(db) {
     }
   };
 
+  const refreshPage = async (req, res) => {
+    console.log('refreshing page');
+
+    // get the currGame id from the client
+    const { currGameId: gameId } = req.body;
+
+    console.log('gameId is');
+    console.log(gameId);
+    // generate the game instance
+    try {
+      const currGameInstance = await db.Game.findByPk(gameId);
+
+      // send details back to client
+      currGameInstance.gameState.playerHandArr.forEach((element, index) => {
+        if (element.id === Number(req.cookies.userId)) {
+          res.send({
+            gameId: currGameInstance.id,
+            drawPile: currGameInstance.gameState.drawPile,
+            referenceCardPile: currGameInstance.gameState.referenceCardPile,
+            discardPile: currGameInstance.gameState.discardPile,
+            playerHand: currGameInstance.gameState.playerHandArr[index].cards,
+            turn: currGameInstance.gameState.playerHandArr[currGameInstance.gameState.whoseTurn].id,
+            won: currGameInstance.gameState.won,
+            winnerDetails: currGameInstance.gameState.winnerDetails,
+          });
+        }
+      });
+    } catch (error) {
+      res.status(500).send(error);
+      console.error(error);
+    }
+  };
+
   return {
-    create, validateDiscardingOfCard, endPlayerTurn, endCurrGame,
+    create, validateDiscardingOfCard, endPlayerTurn, endCurrGame, refreshPage,
   };
 }

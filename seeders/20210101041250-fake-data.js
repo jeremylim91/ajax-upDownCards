@@ -28,12 +28,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      {
-        email: 'jon3@gmail.com',
-        password: getHashedString('password1'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
     ];
 
     // Insert categories before items because items reference categories
